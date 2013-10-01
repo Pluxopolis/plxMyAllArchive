@@ -1,3 +1,6 @@
+## Version 1.6 (01/10/2013)
+[+] Tri par titre des articles
+
 ## Version 1.5 (28/05/2013) ##
 [+]	Ajout du paramètre url
 [+] Compatibilité PluXml 5.2
