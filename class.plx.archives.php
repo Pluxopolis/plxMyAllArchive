@@ -11,7 +11,7 @@ class plxArchives {
 	private $plxPlugin = null; # objet plugin
 	private $excludeCats = array(); # tableau des categories exclues de l'affichage
 	private $sort = 'desc'; # critère de tri par date (desc, asc)
-	private $sortby = null; # type d'affichage (by_year, by_category, by_author)
+	private $sortby = null; # type d'affichage (by_year, by_category, by_author, by_title)
 	private $url = ''; # parametre de l'url pour accèder à la page des archvies
 
 	/**
@@ -28,7 +28,7 @@ class plxArchives {
 		$this->url = $this->plxPlugin->getParam('url')=='' ? 'allarchive' : $this->plxPlugin->getParam('url');
 
 		# si appel à partir du hook MyAllArchive
-		if($this->plxMotor->get AND preg_match('/^'.$this->url.'\/(asc|desc)_(by_year|by_category|by_author)/',$this->plxMotor->get,$capture)) {
+		if($this->plxMotor->get AND preg_match('/^'.$this->url.'\/(asc|desc)_(by_year|by_category|by_author|by_title)/',$this->plxMotor->get,$capture)) {
 			$this->sort=$capture[1];
 			$this->sortby=$capture[2];
 		}
@@ -86,6 +86,9 @@ class plxArchives {
 					case 'by_author':
 						$a1[$key] = $row['author'];
 						break;
+					case 'by_title':
+						$a1[$key] = $row['title'];
+						break;
 				}
 				$a2[$key] = $row['date'];
 			}
@@ -104,6 +107,9 @@ class plxArchives {
 					case 'by_author':
 						$this->aArts[$row['author']][$row['id']] = $row;
 						break;
+					case 'by_title':
+						$this->aArts[$row['title']][$row['id']] = $row;
+						break;
 				}
 			}
 		}
@@ -117,24 +123,35 @@ class plxArchives {
 	 * @author	Stephane F
 	 **/
 	public function Display() {
-
 		if($this->aArts) {
-			$format = $this->plxPlugin->getParam('format');
 			echo '<div id="'.$this->url.'">';
-			foreach($this->aArts as $k => $v) {
-				echo '<p class="p_archive">'.plxUtils::strCheck($k).'</p>';
+			if($this->sortby=='by_title') {
 				echo '<ul>';
-				foreach($v as $art) {
-					$row = str_replace('#art_date', plxDate::formatDate($art['date'],'#num_day/#num_month/#num_year(4)'), $format);
-					$row = str_replace('#art_link', '<a href="'.$art['url'].'">'.plxUtils::strCheck($art['title']).'</a>', $row);
-					$row = str_replace('#art_author', plxUtils::strCheck($art['author']), $row);
-					echo '<li>'.$row.'</li>';
+				foreach($this->aArts as $k => $v) {
+					$this->dspList($v);
 				}
 				echo '</ul>';
+			} else {
+				foreach($this->aArts as $k => $v) {
+					echo '<p class="p_archive">'.plxUtils::strCheck($k).'</p>';
+					echo '<ul>';
+					$this->dspList($v);
+					echo '</ul>';
+				}
 			}
 			echo '</div>';
 		} else {
 			echo '<p>'.$this->plxPlugin->getLang('L_NO_ARTICLE').'</p>';
+		}
+	}
+
+	private function dspList($v) {
+		$format = $this->plxPlugin->getParam('format');
+		foreach($v as $art) {
+			$row = str_replace('#art_date', plxDate::formatDate($art['date'],'#num_day/#num_month/#num_year(4)'), $format);
+			$row = str_replace('#art_link', '<a href="'.$art['url'].'">'.plxUtils::strCheck($art['title']).'</a>', $row);
+			$row = str_replace('#art_author', plxUtils::strCheck($art['author']), $row);
+			echo '<li>'.$row.'</li>';
 		}
 	}
 

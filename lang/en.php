@@ -24,6 +24,7 @@ $LANG = array(
 'L_SORT_BY_YEAR'			=> 'year',
 'L_SORT_BY_CATEGORY'		=> 'category',
 'L_SORT_BY_AUTHOR'			=> 'author',
+'L_SORT_BY_TITLE'			=> 'title',
 'L_SORT_DESCENDING_DATE'	=> 'descending',
 'L_SORT_ASCENDING_DATE'		=> 'ascending',
 

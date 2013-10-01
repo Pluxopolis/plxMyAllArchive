@@ -17,25 +17,25 @@ class plxMyAllArchive extends plxPlugin {
 	 **/
 	public function __construct($default_lang) {
 
-        # appel du constructeur de la classe plxPlugin (obligatoire)
-        parent::__construct($default_lang);
+		# appel du constructeur de la classe plxPlugin (obligatoire)
+		parent::__construct($default_lang);
 
 		# droits pour accèder à la page config.php du plugin
 		$this->setConfigProfil(PROFIL_ADMIN);
 
 		$this->url = $this->getParam('url')=='' ? 'allarchive' : $this->getParam('url');
 
-        # déclaration des hooks
-        $this->addHook('plxMotorPreChauffageBegin', 'plxMotorPreChauffageBegin');
+		# déclaration des hooks
+		$this->addHook('plxMotorPreChauffageBegin', 'plxMotorPreChauffageBegin');
 		$this->addHook('plxShowConstruct', 'plxShowConstruct');
-        $this->addHook('plxShowStaticListEnd', 'plxShowStaticListEnd');
+		$this->addHook('plxShowStaticListEnd', 'plxShowStaticListEnd');
 		$this->addHook('ThemeEndHead', 'ThemeEndHead');
 		$this->addHook('plxShowPageTitle', 'plxShowPageTitle');
 		$this->addHook('SitemapStatics', 'SitemapStatics');
 
 		$this->addHook('MyAllArchive', 'MyAllArchive');
 
-    }
+	}
 
 	/**
 	 * Méthode de traitement du hook plxShowConstruct
@@ -43,7 +43,7 @@ class plxMyAllArchive extends plxPlugin {
 	 * @return	stdio
 	 * @author	Stephane F
 	 **/
-    public function plxShowConstruct() {
+	public function plxShowConstruct() {
 
 		# infos sur la page statique
 		$string  = "if(\$this->plxMotor->mode=='".$this->url."') {";
@@ -59,7 +59,7 @@ class plxMyAllArchive extends plxPlugin {
 		$string .= "	\$this->plxMotor->aStats = array_merge(\$this->plxMotor->aStats, \$array);";
 		$string .= "}";
 		echo "<?php ".$string." ?>";
-    }
+	}
 
 	/**
 	 * Méthode de traitement du hook plxMotorPreChauffageBegin
@@ -67,7 +67,7 @@ class plxMyAllArchive extends plxPlugin {
 	 * @return	stdio
 	 * @author	Stephane F
 	 **/
-    public function plxMotorPreChauffageBegin() {
+	public function plxMotorPreChauffageBegin() {
 
 		$template = $this->getParam('template')==''?'static.php':$this->getParam('template');
 
@@ -81,7 +81,7 @@ class plxMyAllArchive extends plxPlugin {
 		";
 
 		echo "<?php ".$string." ?>";
-    }
+	}
 
 	/**
 	 * Méthode de traitement du hook plxShowStaticListEnd
@@ -89,14 +89,14 @@ class plxMyAllArchive extends plxPlugin {
 	 * @return	stdio
 	 * @author	Stephane F
 	 **/
-    public function plxShowStaticListEnd() {
+	public function plxShowStaticListEnd() {
 
 		# ajout du menu pour accèder à la page de toutes les archives
 		if($this->getParam('mnuDisplay')) {
 			echo "<?php \$class = \$this->plxMotor->mode=='".$this->url."'?'active':'noactive'; ?>";
 			echo "<?php array_splice(\$menus, ".($this->getParam('mnuPos')-1).", 0, '<li><a class=\"static '.\$class.'\" href=\"'.\$this->plxMotor->urlRewrite('?".$this->url."').'\">".$this->getParam('mnuName')."</a></li>'); ?>";
 		}
-    }
+	}
 
 	/**
 	 * Méthode qui ajoute le fichier css dans le fichier header.php du thème
@@ -146,7 +146,7 @@ class plxMyAllArchive extends plxPlugin {
 	 *
 	 * @param	params		string ou array
 							- si array:
-								- array[0] = type d'affichage (by_year, by_category, by_author)
+								- array[0] = type d'affichage (by_year, by_category, by_author, by_title)
 								- array[1] = tri par date ('asc', 'desc')
 								- array[2] = format d'affichage (variables : #archives_status, #archives_url, #archives_name)
 							- si string:

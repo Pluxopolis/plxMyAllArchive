@@ -23,6 +23,7 @@ $LANG = array(
 'L_SORT_BY_YEAR'			=> 'ann&eacute;e',
 'L_SORT_BY_CATEGORY'		=> 'cat&eacute;gorie',
 'L_SORT_BY_AUTHOR'			=> 'auteur',
+'L_SORT_BY_TITLE'			=> 'titre',
 'L_SORT_DESCENDING_DATE'	=> 'descendante',
 'L_SORT_ASCENDING_DATE'		=> 'ascendante',
 

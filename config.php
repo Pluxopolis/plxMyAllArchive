@@ -39,6 +39,7 @@ $aSortBy = array();
 $aSortBy['by_year'] = $plxPlugin->getLang('L_SORT_BY_YEAR');
 $aSortBy['by_category']	= $plxPlugin->getLang('L_SORT_BY_CATEGORY');
 $aSortBy['by_author']	= $plxPlugin->getLang('L_SORT_BY_AUTHOR');
+$aSortBy['by_title']	= $plxPlugin->getLang('L_SORT_BY_TITLE');
 
 $aSort = array('desc'=>$plxPlugin->getLang('L_SORT_DESCENDING_DATE'), 'asc'=>$plxPlugin->getLang('L_SORT_ASCENDING_DATE'));
 
@@ -117,6 +118,7 @@ $aSort = array('desc'=>$plxPlugin->getLang('L_SORT_DESCENDING_DATE'), 'asc'=>$pl
 'by_year' : <?php $plxPlugin->lang('L_SORT_BY_YEAR') ?><br />
 'by_category' : <?php $plxPlugin->lang('L_SORT_BY_CATEGORY') ?><br />
 'by_author' : <?php $plxPlugin->lang('L_SORT_BY_AUTHOR') ?><br />
+'by_title' : <?php $plxPlugin->lang('L_SORT_BY_TITLE') ?><br />
 </p>
 <br />
 <p style="padding-left:20px">
