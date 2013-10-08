@@ -56,7 +56,7 @@ class plxArchives {
 							elseif($catId=='home')
 								$catName = L_HOMEPAGE;
 							else
-								$catName = plxUtils::strCheck($this->plxMotor->aCats[$catId]['name']);
+								$catName = $this->plxMotor->aCats[$catId]['name'];
 
 							$art = array(
 								'id'		=> $tmp['numero'],
