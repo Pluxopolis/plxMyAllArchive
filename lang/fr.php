@@ -6,6 +6,7 @@ $LANG = array(
 'L_NO_ARTICLE'				=> 'Aucun article',
 
 # config.php
+'L_MAIN'					=> 'Général',
 'L_MENU_DISPLAY'			=> 'Afficher le menu de la page des archives dans la liste des pages statiques',
 'L_MENU_TITLE'		    	=> 'Titre du menu',
 'L_MENU_POS'		    	=> 'Position du menu  dans la liste des pages statiques',

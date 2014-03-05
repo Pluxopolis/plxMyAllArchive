@@ -6,6 +6,7 @@ $LANG = array(
 'L_NO_ARTICLE'				=> 'No article',
 
 # config.php
+'L_MAIN'					=> 'Main',
 'L_MENU_DISPLAY'			=> 'Display the menu of the archive page in the static page list',
 'L_MENU_TITLE'		    	=> 'Menu title in the static page list',
 'L_MENU_POS'		    	=> 'Menu position',

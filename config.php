@@ -4,9 +4,15 @@
 # Control du token du formulaire
 plxToken::validateFormToken($_POST);
 
+if(defined('PLX_MYMULTILINGUE')) {
+	$array =  explode(',', PLX_MYMULTILINGUE);
+	$aLangs = array_intersect($array, array('fr', 'en'));
+} else {
+	$aLangs = array($plxPlugin->default_lang);
+}
+
 if(!empty($_POST)) {
 	$plxPlugin->setParam('mnuDisplay', $_POST['mnuDisplay'], 'numeric');
-	$plxPlugin->setParam('mnuName', $_POST['mnuName'], 'string');
 	$plxPlugin->setParam('mnuPos', $_POST['mnuPos'], 'numeric');
 	$plxPlugin->setParam('sortby', $_POST['sortby'], 'string');
 	$plxPlugin->setParam('sort', $_POST['sort'], 'string');
@@ -14,19 +20,31 @@ if(!empty($_POST)) {
 	$plxPlugin->setParam('exclude', implode(',',$_POST['catId']), 'string');
 	$plxPlugin->setParam('template', $_POST['template'], 'string');
 	$plxPlugin->setParam('url', $_POST['url'], 'string');
+	foreach($aLangs as $lang) {
+		$plxPlugin->setParam('mnuName_'.$lang, $_POST['mnuName_'.$lang], 'string');
+	}
 	$plxPlugin->saveParams();
 	header('Location: parametres_plugin.php?p=plxMyAllArchive');
 	exit;
 }
-$mnuDisplay =  $plxPlugin->getParam('mnuDisplay')=='' ? 1 : $plxPlugin->getParam('mnuDisplay');
-$mnuName =  $plxPlugin->getParam('mnuName')=='' ? $plxPlugin->getLang('L_DEFAULT_MENU_NAME') : $plxPlugin->getParam('mnuName');
-$mnuPos =  $plxPlugin->getParam('mnuPos')=='' ? 2 : $plxPlugin->getParam('mnuPos');
-$sortby =  $plxPlugin->getParam('sortby')=='' ? 'by_year' : $plxPlugin->getParam('sortby');
-$sort =  $plxPlugin->getParam('sort')=='' ? 'desc' : $plxPlugin->getParam('sort');
-$format =  $plxPlugin->getParam('format')=='' ? $plxPlugin->getLang('L_DEFAULT_FORMAT') : $plxPlugin->getParam('format');
-$exclude =  $plxPlugin->getParam('exclude')=='' ? '' : $plxPlugin->getParam('exclude');
-$template = $plxPlugin->getParam('template')=='' ? 'static.php' : $plxPlugin->getParam('template');
-$url = $plxPlugin->getParam('url')=='' ? 'allarchive' : $plxPlugin->getParam('url');
+
+$var = array();
+# initialisation des variables propres à chaque lanque
+$langs = array();
+foreach($aLangs as $lang) {
+	# chargement de chaque fichier de langue
+	$langs[$lang] = $plxPlugin->loadLang(PLX_PLUGINS.'plxMyAllArchive/lang/'.$lang.'.php');
+	$var[$lang]['mnuName'] =  $plxPlugin->getParam('mnuName_'.$lang)=='' ? $langs[$lang]['L_DEFAULT_MENU_NAME'] : $plxPlugin->getParam('mnuName_'.$lang);
+}
+# initialisation des variables communes à chaque langue
+$var['mnuDisplay'] =  $plxPlugin->getParam('mnuDisplay')=='' ? 1 : $plxPlugin->getParam('mnuDisplay');
+$var['mnuPos'] =  $plxPlugin->getParam('mnuPos')=='' ? 2 : $plxPlugin->getParam('mnuPos');
+$var['sortby'] =  $plxPlugin->getParam('sortby')=='' ? 'by_year' : $plxPlugin->getParam('sortby');
+$var['sort'] =  $plxPlugin->getParam('sort')=='' ? 'desc' : $plxPlugin->getParam('sort');
+$var['format'] =  $plxPlugin->getParam('format')=='' ? $plxPlugin->getLang('L_DEFAULT_FORMAT') : $plxPlugin->getParam('format');
+$var['exclude'] =  $plxPlugin->getParam('exclude')=='' ? '' : $plxPlugin->getParam('exclude');
+$var['template'] = $plxPlugin->getParam('template')=='' ? 'static.php' : $plxPlugin->getParam('template');
+$var['url'] = $plxPlugin->getParam('url')=='' ? 'allarchive' : $plxPlugin->getParam('url');
 
 # On récupère les templates des pages statiques
 $files = plxGlob::getInstance(PLX_ROOT.'themes/'.$plxAdmin->aConf['style']);
@@ -44,101 +62,72 @@ $aSortBy['by_title']	= $plxPlugin->getLang('L_SORT_BY_TITLE');
 $aSort = array('desc'=>$plxPlugin->getLang('L_SORT_DESCENDING_DATE'), 'asc'=>$plxPlugin->getLang('L_SORT_ASCENDING_DATE'));
 
 ?>
-
 <h2><?php echo $plxPlugin->getInfo('title') ?></h2>
 
+<div id="tabContainer">
 <form id="form_plxmycontact" action="parametres_plugin.php?p=plxMyAllArchive" method="post">
-	<fieldset>
-		<p class="field"><label for="id_mnuDisplay"><?php echo $plxPlugin->lang('L_MENU_DISPLAY') ?>&nbsp;:</label></p>
-		<?php plxUtils::printSelect('mnuDisplay',array('1'=>L_YES,'0'=>L_NO),$mnuDisplay); ?>
-		<p class="field"><label for="id_mnuPos"><?php $plxPlugin->lang('L_MENU_POS') ?>&nbsp;:</label></p>
-		<?php plxUtils::printInput('mnuPos',$mnuPos,'text','2-5') ?>
-		<p class="field"><label for="id_mnuName"><?php $plxPlugin->lang('L_MENU_TITLE') ?>&nbsp;:</label></p>
-		<?php plxUtils::printInput('mnuName',$mnuName,'text','20-20') ?>
-		<p class="field"><label for="id_url"><?php $plxPlugin->lang('L_URL') ?>&nbsp;:</label></p>
-		<?php plxUtils::printInput('url',$url,'text','20-255') ?>
-		<p class="field"><label for="id_sortby"><?php $plxPlugin->lang('L_MENU_SORT_BY') ?>&nbsp;:</label></p>
-		<?php plxUtils::printSelect('sortby', $aSortBy, $sortby) ?>
-		<p class="field"><label for="id_sort"><?php $plxPlugin->lang('L_MENU_SORT') ?>&nbsp;:</label></p>
-		<?php plxUtils::printSelect('sort', $aSort, $sort) ?>
-		<p class="field"><label for="id_format"><?php $plxPlugin->lang('L_MENU_FORMAT') ?></label></p>
-		<?php plxUtils::printInput('format',$format,'text','50-50') ?>
-
-		<p class="field"><label><?php $plxPlugin->lang('L_MENU_EXCLUDE_CATEGORIES') ?>&nbsp;:</label></p>
-		<p style="margin:0;padding:0;float:left">
-		<?php
-			$catId = explode(',', $exclude);
-			$selected = (is_array($catId) AND in_array('000', $catId)) ? ' checked="checked"' : '';
-			echo '<input type="checkbox" id="cat_unclassified" name="catId[]"'.$selected.' value="000" /><label for="cat_unclassified">&nbsp;'. L_UNCLASSIFIED .'</label><br />';
-			$selected = (is_array($catId) AND in_array('home', $catId)) ? ' checked="checked"' : '';
-			echo '<input type="checkbox" id="cat_home" name="catId[]"'.$selected.' value="home" /><label for="cat_home">&nbsp;'. L_CATEGORY_HOME_PAGE .'</label><br />';
-			foreach($plxAdmin->aCats as $cat_id => $cat_name) {
-				$selected = (is_array($catId) AND in_array($cat_id, $catId)) ? ' checked="checked"' : '';
-				echo '<input type="checkbox" id="cat_'.$cat_id.'" name="catId[]"'.$selected.' value="'.$cat_id.'" />';
-				if($plxAdmin->aCats[$cat_id]['active'])
-					echo '<label for="cat_'.$cat_id.'">&nbsp;'.plxUtils::strCheck($cat_name['name']).'</label><br />';
-				else
-					echo '<label for="cat_'.$cat_id.'">&nbsp;<em>'.plxUtils::strCheck($cat_name['name']).'</em></label><br />';
+	<div class="tabs">
+		<ul>
+			<li id="tabHeader_main"><?php $plxPlugin->lang('L_MAIN') ?></li>
+			<?php
+			foreach($aLangs as $lang) {
+				echo '<li id="tabHeader_'.$lang.'">'.strtoupper($lang).'</li>';
 			}
-		?>
-		</p>
-		<p class="field"><label for="id_template"><?php $plxPlugin->lang('L_MENU_TEMPLATE') ?>&nbsp;:</label></p>
-		<?php plxUtils::printSelect('template', $aTemplates, $template) ?>
+			?>
+		</ul>
+	</div>
+	<div class="tabscontent">
+		<div class="tabpage" id="tabpage_main">
+			<fieldset>
+				<p class="field"><label for="id_url"><?php $plxPlugin->lang('L_URL') ?>&nbsp;:</label></p>
+				<?php plxUtils::printInput('url',$var['url'],'text','20-255') ?>
+				<p class="field"><label for="id_mnuDisplay"><?php echo $plxPlugin->lang('L_MENU_DISPLAY') ?>&nbsp;:</label></p>
+				<?php plxUtils::printSelect('mnuDisplay',array('1'=>L_YES,'0'=>L_NO),$var['mnuDisplay']); ?>
+				<p class="field"><label for="id_mnuPos"><?php $plxPlugin->lang('L_MENU_POS') ?>&nbsp;:</label></p>
+				<?php plxUtils::printInput('mnuPos',$var['mnuPos'],'text','2-5') ?>
+				<p class="field"><label for="id_sortby"><?php $plxPlugin->lang('L_MENU_SORT_BY') ?>&nbsp;:</label></p>
+				<?php plxUtils::printSelect('sortby', $aSortBy, $var['sortby']) ?>
+				<p class="field"><label for="id_sort"><?php $plxPlugin->lang('L_MENU_SORT') ?>&nbsp;:</label></p>
+				<?php plxUtils::printSelect('sort', $aSort, $var['sort']) ?>
+				<p class="field"><label for="id_format"><?php $plxPlugin->lang('L_MENU_FORMAT') ?></label></p>
+				<?php plxUtils::printInput('format',$var['format'],'text','50-50') ?>
+				<p class="field"><label><?php $plxPlugin->lang('L_MENU_EXCLUDE_CATEGORIES') ?>&nbsp;:</label></p>
+				<p style="margin:0;padding:0;float:left">
+				<?php
+					$catId = explode(',', $var['exclude']);
+					$selected = (is_array($catId) AND in_array('000', $catId)) ? ' checked="checked"' : '';
+					echo '<input type="checkbox" id="cat_unclassified" name="catId[]"'.$selected.' value="000" /><label for="cat_unclassified">&nbsp;'. L_UNCLASSIFIED .'</label><br />';
+					$selected = (is_array($catId) AND in_array('home', $catId)) ? ' checked="checked"' : '';
+					echo '<input type="checkbox" id="cat_home" name="catId[]"'.$selected.' value="home" /><label for="cat_home">&nbsp;'. L_CATEGORY_HOME_PAGE .'</label><br />';
+					foreach($plxAdmin->aCats as $cat_id => $cat_name) {
+						$selected = (is_array($catId) AND in_array($cat_id, $catId)) ? ' checked="checked"' : '';
+						echo '<input type="checkbox" id="cat_'.$cat_id.'" name="catId[]"'.$selected.' value="'.$cat_id.'" />';
+						if($plxAdmin->aCats[$cat_id]['active'])
+							echo '<label for="cat_'.$cat_id.'">&nbsp;'.plxUtils::strCheck($cat_name['name']).'</label><br />';
+						else
+							echo '<label for="cat_'.$cat_id.'">&nbsp;<em>'.plxUtils::strCheck($cat_name['name']).'</em></label><br />';
+					}
+				?>
+				</p>
+				<p class="field"><label for="id_template"><?php $plxPlugin->lang('L_MENU_TEMPLATE') ?>&nbsp;:</label></p>
+				<?php plxUtils::printSelect('template', $aTemplates, $var['template']) ?>
+			</fieldset>
+		</div>
+		<?php foreach($aLangs as $lang) : ?>
+		<div class="tabpage" id="tabpage_<?php echo $lang ?>">
+			<fieldset>
+				<p class="field"><label for="id_mnuName_<?php echo $lang ?>"><?php $plxPlugin->lang('L_MENU_TITLE') ?>&nbsp;:</label></p>
+				<?php plxUtils::printInput('mnuName_'.$lang,$var[$lang]['mnuName'],'text','20-20') ?>
+			</fieldset>
+		</div>
+		<?php endforeach; ?>
+	</div>
+	<fieldset>
 		<p>
 			<?php echo plxToken::getTokenPostMethod() ?>
 			<input type="submit" name="submit" value="<?php $plxPlugin->lang('L_SAVE') ?>" />
 		</p>
 	</fieldset>
 </form>
-
-<br />
-
-<strong><?php $plxPlugin->lang('L_HELP1') ?> :</strong><br /><br />
-<?php $plxPlugin->lang('L_EXAMPLE') ?> :<br />
-<p style="color:#000;font-size:12px; background:#fff; padding: 10px 20px 20px 20px; border:1px solid #efefef">
-<?php echo htmlspecialchars("<?php eval(\$plxShow->callHook('MyAllArchive')) ?>") ?>
-</p>
-
-<br />
-
-<strong><?php $plxPlugin->lang('L_HELP2') ?> (#archives_status, #archives_url, #archives_name) :</strong><br /><br />
-<?php $plxPlugin->lang('L_EXAMPLE') ?> 1:<br />
-<p style="color:#000;font-size:12px; background:#fff; padding: 10px 20px 20px 20px; border:1px solid #efefef">
-<?php echo htmlspecialchars("<?php eval(\$plxShow->callHook('MyAllArchive', '<a href=\"#archives_url\" class=\"#archives_status\" title=\"#archives_name\">#archives_name</a>')) ?>") ?>
-</p>
-<?php $plxPlugin->lang('L_EXAMPLE') ?> 2:<br />
-<p style="color:#000;font-size:12px; background:#fff; padding: 10px 20px 20px 20px; border:1px solid #efefef">
-<?php echo htmlspecialchars("<?php eval(\$plxShow->callHook('MyAllArchive', '<a href=\"#archives_url\" class=\"#archives_status\" title=\"#archives_name\">".$plxPlugin->getLang('L_MY_ARCHIVES')."</a>')) ?>") ?>
-</p>
-
-<br />
-
-<strong><?php echo $plxPlugin->getLang('L_HELP2').' '.$plxPlugin->getLang('L_BY').' '.$plxPlugin->getLang('L_SORT_BY_YEAR').', '.$plxPlugin->getLang('L_SORT_BY_CATEGORY').', '.$plxPlugin->getLang('L_SORT_BY_AUTHOR') ?><br /></strong>
-<p style="padding-left:20px">
-'by_year' : <?php $plxPlugin->lang('L_SORT_BY_YEAR') ?><br />
-'by_category' : <?php $plxPlugin->lang('L_SORT_BY_CATEGORY') ?><br />
-'by_author' : <?php $plxPlugin->lang('L_SORT_BY_AUTHOR') ?><br />
-'by_title' : <?php $plxPlugin->lang('L_SORT_BY_TITLE') ?><br />
-</p>
-<br />
-<p style="padding-left:20px">
-'asc' : <?php $plxPlugin->lang('L_SORT_ASCENDING_DATE') ?><br />
-'desc' : <?php $plxPlugin->lang('L_SORT_DESCENDING_DATE') ?><br />
-</p>
-<br />
-<?php $plxPlugin->lang('L_EXAMPLE') ?> 1:<br />
-<p style="color:#000;font-size:12px; background:#fff; padding: 10px 20px 20px 20px; border:1px solid #efefef">
-<?php echo htmlspecialchars("<?php eval(\$plxShow->callHook('MyAllArchive', array('by_category', 'desc'))) ?>") ?>
-</p>
-<?php $plxPlugin->lang('L_EXAMPLE') ?> 2:<br />
-<p style="color:#000;font-size:12px; background:#fff; padding: 10px 20px 20px 20px; border:1px solid #efefef">
-<?php echo htmlspecialchars("<?php eval(\$plxShow->callHook('MyAllArchive', array('by_author', 'asc'))) ?>") ?>
-</p>
-<?php $plxPlugin->lang('L_EXAMPLE') ?> 3:<br />
-<p style="color:#000;font-size:12px; background:#fff; padding: 10px 20px 20px 20px; border:1px solid #efefef">
-<?php echo htmlspecialchars("<?php eval(\$plxShow->callHook('MyAllArchive', array('by_year', 'desc', '<a href=\"#archives_url\" class=\"#archives_status\" title=\"#archives_name\">#archives_name</a>'))) ?>") ?>
-</p>
-<?php $plxPlugin->lang('L_EXAMPLE') ?> 4:<br />
-<p style="color:#000;font-size:12px; background:#fff; padding: 10px 20px 20px 20px; border:1px solid #efefef">
-<?php echo htmlspecialchars("<?php eval(\$plxShow->callHook('MyAllArchive', array('by_year', 'asc', '<a href=\"#archives_url\" class=\"#archives_status\" title=\"#archives_name\">".$plxPlugin->getLang('L_MY_ARCHIVES')."</a>'))) ?>") ?>
-</p>
+</div>
+<script type="text/javascript" src="<?php echo PLX_PLUGINS."plxMyAllArchive/tabs/tabs.js" ?>"></script>

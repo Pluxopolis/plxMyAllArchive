@@ -29,12 +29,18 @@ class plxMyAllArchive extends plxPlugin {
 		$this->addHook('plxMotorPreChauffageBegin', 'plxMotorPreChauffageBegin');
 		$this->addHook('plxShowConstruct', 'plxShowConstruct');
 		$this->addHook('plxShowStaticListEnd', 'plxShowStaticListEnd');
-		$this->addHook('ThemeEndHead', 'ThemeEndHead');
 		$this->addHook('plxShowPageTitle', 'plxShowPageTitle');
 		$this->addHook('SitemapStatics', 'SitemapStatics');
+		$this->addHook('AdminTopEndHead', 'AdminTopEndHead');
 
 		$this->addHook('MyAllArchive', 'MyAllArchive');
 
+	}
+	
+	public function AdminTopEndHead() {	
+		if(basename($_SERVER['SCRIPT_NAME'])=='parametres_plugin.php') {
+			echo '<link href="'.PLX_PLUGINS.'plxMyAllArchive/tabs/style.css" rel="stylesheet" type="text/css" />'."\n";
+		}
 	}
 
 	/**
@@ -49,7 +55,7 @@ class plxMyAllArchive extends plxPlugin {
 		$string  = "if(\$this->plxMotor->mode=='".$this->url."') {";
 		$string .= "	\$array = array();";
 		$string .= "	\$array[\$this->plxMotor->cible] = array(
-			'name'		=> '".$this->getParam('mnuName')."',
+			'name'		=> '".$this->getParam('mnuName_'.$this->default_lang)."',
 			'menu'		=> '',
 			'url'		=> 'allarchive',
 			'readable'	=> 1,
@@ -74,7 +80,8 @@ class plxMyAllArchive extends plxPlugin {
 		$string = "
 		if(\$this->get && preg_match('/^".$this->url."/',\$this->get)) {
 			\$this->mode = '".$this->url."';
-			\$this->cible = '../../plugins/plxMyAllArchive/static';
+			\$prefix = str_repeat('../', substr_count(trim(PLX_ROOT.\$this->aConf['racine_statiques'], '/'), '/'));
+			\$this->cible = \$prefix.'plugins/plxMyAllArchive/static';
 			\$this->template = '".$template."';
 			return true;
 		}
@@ -94,19 +101,8 @@ class plxMyAllArchive extends plxPlugin {
 		# ajout du menu pour accèder à la page de toutes les archives
 		if($this->getParam('mnuDisplay')) {
 			echo "<?php \$class = \$this->plxMotor->mode=='".$this->url."'?'active':'noactive'; ?>";
-			echo "<?php array_splice(\$menus, ".($this->getParam('mnuPos')-1).", 0, '<li><a class=\"static '.\$class.'\" href=\"'.\$this->plxMotor->urlRewrite('?".$this->url."').'\">".$this->getParam('mnuName')."</a></li>'); ?>";
+			echo "<?php array_splice(\$menus, ".($this->getParam('mnuPos')-1).", 0, '<li><a class=\"static '.\$class.'\" href=\"'.\$this->plxMotor->urlRewrite('?".$this->url."').'\">".$this->getParam('mnuName_'.$this->default_lang)."</a></li>'); ?>";
 		}
-	}
-
-	/**
-	 * Méthode qui ajoute le fichier css dans le fichier header.php du thème
-	 *
-	 * @return	stdio
-	 * @author	Stephane F
-	 **/
-	public function ThemeEndHead() {
-		echo "\t".'<link rel="stylesheet" type="text/css" href="'.PLX_PLUGINS.'plxMyAllArchive/style.css" media="screen" />'."\n";
-
 	}
 
 	/**
@@ -176,7 +172,7 @@ class plxMyAllArchive extends plxPlugin {
 
 		echo '<?php
 		$name = str_replace("#archives_url", $plxMotor->urlRewrite("'.$url.'"), "'.$format.'");
-		$name = str_replace("#archives_name", "'.$this->getParam('mnuName').'", $name);
+		$name = str_replace("#archives_name", "'.$this->getParam('mnuName_'.$this->default_lang).'", $name);
 		if ($plxShow->plxMotor->get AND preg_match("/^'.$this->url.'/", $plxShow->plxMotor->get))
 			$name = str_replace("#archives_status", "active", $name);
 		else

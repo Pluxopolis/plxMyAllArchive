@@ -1,7 +1,12 @@
-## Version 1.6.1 (08/10/2013)
+﻿## Version 1.7 (27/02/2014) ##
+[+] Gestion du paramètrage multilingue
+[+] Gestion css à partir de la configuration du plugin
+[+] Compatibilité avec le plugin plxMyMultiLingue
+
+## Version 1.6.1 (08/10/2013) ##
 BUG Problème d'accent dans l'affichage par catégorie dans le titre des catégories
 
-## Version 1.6 (01/10/2013)
+## Version 1.6 (01/10/2013) ##
 [+] Tri par titre des articles
 
 ## Version 1.5 (28/05/2013) ##
