@@ -62,10 +62,13 @@ $aSortBy['by_title']	= $plxPlugin->getLang('L_SORT_BY_TITLE');
 $aSort = array('desc'=>$plxPlugin->getLang('L_SORT_DESCENDING_DATE'), 'asc'=>$plxPlugin->getLang('L_SORT_ASCENDING_DATE'));
 
 ?>
-<h2><?php echo $plxPlugin->getInfo('title') ?></h2>
-
+<style>
+form.inline-form label {
+	width: 250px;
+}
+</style>
 <div id="tabContainer">
-<form id="form_plxmycontact" action="parametres_plugin.php?p=plxMyAllArchive" method="post">
+<form class="inline-form" id="form_plxmycontact" action="parametres_plugin.php?p=plxMyAllArchive" method="post">
 	<div class="tabs">
 		<ul>
 			<li id="tabHeader_main"><?php $plxPlugin->lang('L_MAIN') ?></li>
@@ -79,21 +82,35 @@ $aSort = array('desc'=>$plxPlugin->getLang('L_SORT_DESCENDING_DATE'), 'asc'=>$pl
 	<div class="tabscontent">
 		<div class="tabpage" id="tabpage_main">
 			<fieldset>
-				<p class="field"><label for="id_url"><?php $plxPlugin->lang('L_URL') ?>&nbsp;:</label></p>
-				<?php plxUtils::printInput('url',$var['url'],'text','20-255') ?>
-				<p class="field"><label for="id_mnuDisplay"><?php echo $plxPlugin->lang('L_MENU_DISPLAY') ?>&nbsp;:</label></p>
-				<?php plxUtils::printSelect('mnuDisplay',array('1'=>L_YES,'0'=>L_NO),$var['mnuDisplay']); ?>
-				<p class="field"><label for="id_mnuPos"><?php $plxPlugin->lang('L_MENU_POS') ?>&nbsp;:</label></p>
-				<?php plxUtils::printInput('mnuPos',$var['mnuPos'],'text','2-5') ?>
-				<p class="field"><label for="id_sortby"><?php $plxPlugin->lang('L_MENU_SORT_BY') ?>&nbsp;:</label></p>
-				<?php plxUtils::printSelect('sortby', $aSortBy, $var['sortby']) ?>
-				<p class="field"><label for="id_sort"><?php $plxPlugin->lang('L_MENU_SORT') ?>&nbsp;:</label></p>
-				<?php plxUtils::printSelect('sort', $aSort, $var['sort']) ?>
-				<p class="field"><label for="id_format"><?php $plxPlugin->lang('L_MENU_FORMAT') ?></label></p>
-				<?php plxUtils::printInput('format',$var['format'],'text','50-50') ?>
-				<p class="field"><label><?php $plxPlugin->lang('L_MENU_EXCLUDE_CATEGORIES') ?>&nbsp;:</label></p>
-				<p style="margin:0;padding:0;float:left">
-				<?php
+				<p>
+					<label for="id_url"><?php $plxPlugin->lang('L_URL') ?>&nbsp;:</label>
+					<?php plxUtils::printInput('url',$var['url'],'text','20-255') ?>
+				</p>
+				<p>
+					<label for="id_mnuDisplay"><?php echo $plxPlugin->lang('L_MENU_DISPLAY') ?>&nbsp;:</label>
+					<?php plxUtils::printSelect('mnuDisplay',array('1'=>L_YES,'0'=>L_NO),$var['mnuDisplay']); ?>
+				</p>
+				<p>
+					<label for="id_mnuPos"><?php $plxPlugin->lang('L_MENU_POS') ?>&nbsp;:</label>
+					<?php plxUtils::printInput('mnuPos',$var['mnuPos'],'text','2-5') ?>
+				</p>
+				<p>
+					<label for="id_sortby"><?php $plxPlugin->lang('L_MENU_SORT_BY') ?>&nbsp;:</label>
+					<?php plxUtils::printSelect('sortby', $aSortBy, $var['sortby']) ?>
+				</p>
+				<p>
+					<label for="id_sort"><?php $plxPlugin->lang('L_MENU_SORT') ?>&nbsp;:</label>
+					<?php plxUtils::printSelect('sort', $aSort, $var['sort']) ?>
+				</p>
+				<p>
+					<label for="id_format"><?php $plxPlugin->lang('L_MENU_FORMAT') ?></label>
+					<?php plxUtils::printInput('format',$var['format'],'text','50-50') ?>
+				</p>
+				<p>
+					<label><?php $plxPlugin->lang('L_MENU_EXCLUDE_CATEGORIES') ?>&nbsp;:</label>
+				</p>
+				<p>
+					<?php
 					$catId = explode(',', $var['exclude']);
 					$selected = (is_array($catId) AND in_array('000', $catId)) ? ' checked="checked"' : '';
 					echo '<input type="checkbox" id="cat_unclassified" name="catId[]"'.$selected.' value="000" /><label for="cat_unclassified">&nbsp;'. L_UNCLASSIFIED .'</label><br />';
@@ -109,21 +126,25 @@ $aSort = array('desc'=>$plxPlugin->getLang('L_SORT_DESCENDING_DATE'), 'asc'=>$pl
 					}
 				?>
 				</p>
-				<p class="field"><label for="id_template"><?php $plxPlugin->lang('L_MENU_TEMPLATE') ?>&nbsp;:</label></p>
-				<?php plxUtils::printSelect('template', $aTemplates, $var['template']) ?>
+				<p>
+					<label for="id_template"><?php $plxPlugin->lang('L_MENU_TEMPLATE') ?>&nbsp;:</label>
+					<?php plxUtils::printSelect('template', $aTemplates, $var['template']) ?>
+				</p>
 			</fieldset>
 		</div>
 		<?php foreach($aLangs as $lang) : ?>
 		<div class="tabpage" id="tabpage_<?php echo $lang ?>">
 			<fieldset>
-				<p class="field"><label for="id_mnuName_<?php echo $lang ?>"><?php $plxPlugin->lang('L_MENU_TITLE') ?>&nbsp;:</label></p>
-				<?php plxUtils::printInput('mnuName_'.$lang,$var[$lang]['mnuName'],'text','20-20') ?>
+				<p>
+					<label for="id_mnuName_<?php echo $lang ?>"><?php $plxPlugin->lang('L_MENU_TITLE') ?>&nbsp;:</label>
+					<?php plxUtils::printInput('mnuName_'.$lang,$var[$lang]['mnuName'],'text','20-20') ?>
+				</p>
 			</fieldset>
 		</div>
 		<?php endforeach; ?>
 	</div>
 	<fieldset>
-		<p>
+		<p class="in-action-bar">
 			<?php echo plxToken::getTokenPostMethod() ?>
 			<input type="submit" name="submit" value="<?php $plxPlugin->lang('L_SAVE') ?>" />
 		</p>

@@ -36,8 +36,8 @@ class plxMyAllArchive extends plxPlugin {
 		$this->addHook('MyAllArchive', 'MyAllArchive');
 
 	}
-	
-	public function AdminTopEndHead() {	
+
+	public function AdminTopEndHead() {
 		if(basename($_SERVER['SCRIPT_NAME'])=='parametres_plugin.php') {
 			echo '<link href="'.PLX_PLUGINS.'plxMyAllArchive/tabs/style.css" rel="stylesheet" type="text/css" />'."\n";
 		}
