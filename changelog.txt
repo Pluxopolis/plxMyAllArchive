@@ -1,4 +1,7 @@
-﻿## Version 1.7.1 (13/05/2015) ##
+﻿## Version 1.7.2 (02/09/2015) ##
+BUG Conflit avec la gestion des archives si le paramètre url du plugin = archives (écran de config du plugin)
+
+## Version 1.7.1 (13/05/2015) ##
 Compatibilité PluXml 5.4
 
 ## Version 1.7 (27/02/2014) ##

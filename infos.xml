@@ -2,9 +2,9 @@
 <document>
 	<title><![CDATA[MyAllArchive]]></title>
 	<author><![CDATA[Stephane F.]]></author>
-	<version>1.7.1</version>
-	<date>13/05/2015</date>
-	<site>http://code.google.com/p/my-pluxml/</site>
+	<version>1.7.2</version>
+	<date>02/09/2015</date>
+	<site>http://pluxopolis.net</site>
 	<description><![CDATA[Affiche la liste des archives suivant différents critères]]></description>
 	<requirements></requirements>
 </document>

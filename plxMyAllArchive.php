@@ -26,13 +26,13 @@ class plxMyAllArchive extends plxPlugin {
 		$this->url = $this->getParam('url')=='' ? 'allarchive' : $this->getParam('url');
 
 		# déclaration des hooks
+		$this->addHook('plxShowConstruct', 'plxShowConstruct');		
 		$this->addHook('plxMotorPreChauffageBegin', 'plxMotorPreChauffageBegin');
-		$this->addHook('plxShowConstruct', 'plxShowConstruct');
+		$this->addHook('plxMotorDemarrageBegin', 'plxMotorDemarrageBegin');			
 		$this->addHook('plxShowStaticListEnd', 'plxShowStaticListEnd');
 		$this->addHook('plxShowPageTitle', 'plxShowPageTitle');
 		$this->addHook('SitemapStatics', 'SitemapStatics');
 		$this->addHook('AdminTopEndHead', 'AdminTopEndHead');
-
 		$this->addHook('MyAllArchive', 'MyAllArchive');
 
 	}
@@ -90,6 +90,19 @@ class plxMyAllArchive extends plxPlugin {
 		echo "<?php ".$string." ?>";
 	}
 
+	/**
+	 * Méthode de traitement du hook plxMotorDemarrageBegin
+	 *
+	 * @return	stdio
+	 * @author	Stephane F
+	 **/	
+	public function plxMotorDemarrageBegin() {
+		echo "<?php 
+			if(preg_match('/plxMyAllArchive/', \$this->cible))
+				return true; 
+		?>";
+	}	
+	
 	/**
 	 * Méthode de traitement du hook plxShowStaticListEnd
 	 *
