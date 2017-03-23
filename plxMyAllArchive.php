@@ -113,8 +113,8 @@ class plxMyAllArchive extends plxPlugin {
 
 		# ajout du menu pour accèder à la page de toutes les archives
 		if($this->getParam('mnuDisplay')) {
-			echo "<?php \$class = \$this->plxMotor->mode=='".$this->url."'?'active':'noactive'; ?>";
-			echo "<?php array_splice(\$menus, ".($this->getParam('mnuPos')-1).", 0, '<li><a class=\"static '.\$class.'\" href=\"'.\$this->plxMotor->urlRewrite('?".$this->url."').'\">".$this->getParam('mnuName_'.$this->default_lang)."</a></li>'); ?>";
+			echo "<?php \$status = \$this->plxMotor->mode=='".$this->url."'?'active':'noactive'; ?>";
+			echo "<?php array_splice(\$menus, ".($this->getParam('mnuPos')-1).", 0, '<li class=\"static menu '.\$status.'\" id=\"static-archives\"><a href=\"'.\$this->plxMotor->urlRewrite('?".$this->url."').'\">".$this->getParam('mnuName_'.$this->default_lang)."</a></li>'); ?>";
 		}
 	}
 
