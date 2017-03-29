@@ -1,5 +1,6 @@
-﻿## Version 1.7.3 (23/03/2017) ##
+﻿## Version 1.8 (29/03/2017) ##
 [+] Compatibilité PluXml 5.6
+[+] Compatibilité avec le plugin plxMyMultiLingue
 [+] Ajout de l'id static-archives
 BUG Surbrillance du menu de la page statique
 

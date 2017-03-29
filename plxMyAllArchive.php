@@ -6,7 +6,8 @@
  **/
 class plxMyAllArchive extends plxPlugin {
 
-	private $url = ''; # parametre de l'url pour accèder à la page des archvies
+	private $url = ''; # parametre de l'url pour accèder à la page des archives
+	public $lang = '';
 
 	/**
 	 * Constructeur de la classe
@@ -17,30 +18,64 @@ class plxMyAllArchive extends plxPlugin {
 	 **/
 	public function __construct($default_lang) {
 
+		# gestion du multilingue plxMyMultiLingue
+		if(preg_match('/([a-z]{2})\/(.*)/i', plxUtils::getGets(), $capture)) {
+				$this->lang = $capture[1].'/';
+		}
+
 		# appel du constructeur de la classe plxPlugin (obligatoire)
 		parent::__construct($default_lang);
 
+		$this->url = $this->getParam('url')=='' ? 'allarchive' : $this->getParam('url');
+				
 		# droits pour accèder à la page config.php du plugin
 		$this->setConfigProfil(PROFIL_ADMIN);
 
-		$this->url = $this->getParam('url')=='' ? 'allarchive' : $this->getParam('url');
-
 		# déclaration des hooks
-		$this->addHook('plxShowConstruct', 'plxShowConstruct');		
-		$this->addHook('plxMotorPreChauffageBegin', 'plxMotorPreChauffageBegin');
-		$this->addHook('plxMotorDemarrageBegin', 'plxMotorDemarrageBegin');			
-		$this->addHook('plxShowStaticListEnd', 'plxShowStaticListEnd');
-		$this->addHook('plxShowPageTitle', 'plxShowPageTitle');
-		$this->addHook('SitemapStatics', 'SitemapStatics');
+		$this->addHook('AdminTopBottom', 'AdminTopBottom');
 		$this->addHook('AdminTopEndHead', 'AdminTopEndHead');
-		$this->addHook('MyAllArchive', 'MyAllArchive');
+
+		# Si le fichier de langue existe on peut mettre en place la partie visiteur
+		if(file_exists(PLX_PLUGINS.$this->plug['name'].'/lang/'.$default_lang.'.php')) {
+			$this->addHook('plxShowConstruct', 'plxShowConstruct');
+			$this->addHook('plxMotorPreChauffageBegin', 'plxMotorPreChauffageBegin');
+			$this->addHook('plxMotorDemarrageBegin', 'plxMotorDemarrageBegin');
+			$this->addHook('plxShowStaticListEnd', 'plxShowStaticListEnd');
+			$this->addHook('plxShowPageTitle', 'plxShowPageTitle');
+			$this->addHook('SitemapStatics', 'SitemapStatics');
+			$this->addHook('MyAllArchive', 'MyAllArchive');
+		}
 
 	}
 
+	/**
+	 * Méthode qui charge le code css nécessaire à la gestion de onglet dans l'écran de configuration du plugin
+	 *
+	 * @return	stdio
+	 * @author	Stephane F
+	 **/
 	public function AdminTopEndHead() {
 		if(basename($_SERVER['SCRIPT_NAME'])=='parametres_plugin.php') {
-			echo '<link href="'.PLX_PLUGINS.'plxMyAllArchive/tabs/style.css" rel="stylesheet" type="text/css" />'."\n";
+			echo '<link href="'.PLX_PLUGINS.$this->plug['name'].'/tabs/style.css" rel="stylesheet" type="text/css" />'."\n";
 		}
+	}
+
+	/**
+	 * Méthode qui affiche un message si le plugin n'a pas la langue du site dans sa traduction
+	 *
+	 * @return	stdio
+	 * @author	Stephane F
+	 **/
+	public function AdminTopBottom() {
+
+		echo '<?php
+		$file = PLX_PLUGINS."'.$this->plug['name'].'/lang/".$plxAdmin->aConf["default_lang"].".php";
+		if(!file_exists($file)) {
+			echo "<p class=\"warning\">Plugin MyAllArchive<br />".sprintf("'.$this->getLang('L_LANG_UNAVAILABLE').'", $file)."</p>";
+			plxMsg::Display();
+		}
+		?>';
+
 	}
 
 	/**
@@ -95,14 +130,14 @@ class plxMyAllArchive extends plxPlugin {
 	 *
 	 * @return	stdio
 	 * @author	Stephane F
-	 **/	
+	 **/
 	public function plxMotorDemarrageBegin() {
-		echo "<?php 
+		echo "<?php
 			if(preg_match('/plxMyAllArchive/', \$this->cible))
-				return true; 
+				return true;
 		?>";
-	}	
-	
+	}
+
 	/**
 	 * Méthode de traitement du hook plxShowStaticListEnd
 	 *
@@ -111,10 +146,13 @@ class plxMyAllArchive extends plxPlugin {
 	 **/
 	public function plxShowStaticListEnd() {
 
+		$name = $this->getParam('mnuName_'.$this->default_lang);
+		if(trim($name)==='') $name = get_class($this);
+
 		# ajout du menu pour accèder à la page de toutes les archives
 		if($this->getParam('mnuDisplay')) {
 			echo "<?php \$status = \$this->plxMotor->mode=='".$this->url."'?'active':'noactive'; ?>";
-			echo "<?php array_splice(\$menus, ".($this->getParam('mnuPos')-1).", 0, '<li class=\"static menu '.\$status.'\" id=\"static-archives\"><a href=\"'.\$this->plxMotor->urlRewrite('?".$this->url."').'\">".$this->getParam('mnuName_'.$this->default_lang)."</a></li>'); ?>";
+			echo "<?php array_splice(\$menus, ".($this->getParam('mnuPos')-1).", 0, '<li class=\"static menu '.\$status.'\" id=\"static-archives\"><a href=\"'.\$this->plxMotor->urlRewrite('?".$this->lang.$this->url."').'\" title=\"".$this->getParam('mnuName_'.$this->default_lang)."\">".$this->getParam('mnuName_'.$this->default_lang)."</a></li>'); ?>";
 		}
 	}
 
@@ -143,7 +181,7 @@ class plxMyAllArchive extends plxPlugin {
 		echo '<?php
 		echo "\n";
 		echo "\t<url>\n";
-		echo "\t\t<loc>".$plxMotor->urlRewrite("?'.$this->url.'")."</loc>\n";
+		echo "\t\t<loc>".$plxMotor->urlRewrite("?'.$this->lang.$this->url.'")."</loc>\n";
 		echo "\t\t<changefreq>monthly</changefreq>\n";
 		echo "\t\t<priority>0.8</priority>\n";
 		echo "\t</url>\n";

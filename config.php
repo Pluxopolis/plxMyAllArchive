@@ -4,11 +4,14 @@
 # Control du token du formulaire
 plxToken::validateFormToken($_POST);
 
+# Liste des langues disponibles et prises en charge par le plugin
+$aLangs = array($plxAdmin->aConf['default_lang']);
+
+# Si le plugin plxMyMultiLingue est installé on filtre sur les langues utilisées
+# On garde par défaut le fr si aucune langue sélectionnée dans plxMyMultiLingue
 if(defined('PLX_MYMULTILINGUE')) {
-	$array =  explode(',', PLX_MYMULTILINGUE['langs']);
-	$aLangs = array_intersect($array, array('fr', 'en'));
-} else {
-	$aLangs = array($plxPlugin->default_lang);
+	$multiLangs = empty(PLX_MYMULTILINGUE['langs']) ? array() : explode(',', PLX_MYMULTILINGUE['langs']);
+	$aLangs = $multiLangs;
 }
 
 if(!empty($_POST)) {
@@ -68,7 +71,7 @@ form.inline-form label {
 }
 </style>
 <div id="tabContainer">
-<form class="inline-form" id="form_plxmycontact" action="parametres_plugin.php?p=plxMyAllArchive" method="post">
+<form class="inline-form" id="form_plxallarchive" action="parametres_plugin.php?p=plxMyAllArchive" method="post">
 	<div class="tabs">
 		<ul>
 			<li id="tabHeader_main"><?php $plxPlugin->lang('L_MAIN') ?></li>
@@ -134,12 +137,16 @@ form.inline-form label {
 		</div>
 		<?php foreach($aLangs as $lang) : ?>
 		<div class="tabpage" id="tabpage_<?php echo $lang ?>">
+			<?php if(!file_exists(PLX_PLUGINS.'plxMyAllArchive/lang/'.$lang.'.php')) : ?>
+			<p><?php printf($plxPlugin->getLang('L_LANG_UNAVAILABLE'), PLX_PLUGINS.'plxMyAllArchive/lang/'.$lang.'.php') ?></p>
+			<?php else : ?>
 			<fieldset>
 				<p>
 					<label for="id_mnuName_<?php echo $lang ?>"><?php $plxPlugin->lang('L_MENU_TITLE') ?>&nbsp;:</label>
 					<?php plxUtils::printInput('mnuName_'.$lang,$var[$lang]['mnuName'],'text','20-20') ?>
 				</p>
 			</fieldset>
+			<?php endif; ?>
 		</div>
 		<?php endforeach; ?>
 	</div>
