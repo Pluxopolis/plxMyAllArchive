@@ -13,7 +13,7 @@ $LANG = array(
 'L_MENU_POS'		    	=> 'Menu position',
 'L_MENU_SORT_BY'			=> 'Display archives by',
 'L_MENU_SORT'				=> 'Sort articles by date',
-'L_MENU_FORMAT'				=> 'Layout settings :<br />#art_date: date<br />#art_link: lien de l\'article<br />#art_author: auteur',
+'L_MENU_FORMAT'				=> 'Layout settings :<br />#art_date: date<br />#art_link: link<br />#art_author: author',
 'L_MENU_EXCLUDE_CATEGORIES'	=> 'Exclude these categories from archives',
 'L_MENU_TEMPLATE'			=> 'Template',
 'L_URL'						=> 'Url parameter',
@@ -22,7 +22,6 @@ $LANG = array(
 'L_DEFAULT_MENU_NAME'		=> 'Archives',
 'L_DEFAULT_FORMAT'			=> '#art_date : #art_link by #art_author',
 
-'L_SORT_BY_YEAR'			=> 'year',
 'L_SORT_BY_YEAR'			=> 'year',
 'L_SORT_BY_CATEGORY'		=> 'category',
 'L_SORT_BY_AUTHOR'			=> 'author',
